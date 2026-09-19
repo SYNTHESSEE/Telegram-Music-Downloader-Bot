@@ -1,0 +1,7 @@
+# Auto-generated package list for environment restoration
+aiogram
+aiohttp
+dotenv
+mutagen
+yandex_music
+yt_dlp
