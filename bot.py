@@ -16,6 +16,7 @@ from utils.animator import StatusAnimator
 from extractors.youtube import YouTubeExtractor
 from extractors.pinterest import PinterestExtractor
 from extractors.yandex import YandexMetaExtractor
+from aiogram.types import FSInputFile
 
 # 1. Загрузка переменных окружения в первую очередь
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -118,10 +119,10 @@ async def handle_message(message: Message):
                 audio_file = FSInputFile(data["filepath"], filename=display_filename)
                 
                 await message.answer_audio(
-                    audio=audio_file,
-                    title=meta["title"],
-                    performer=meta["artist"],
-                    caption=f"🎵 **{meta['artist']} — {meta['title']}**\n*(найдено через YouTube)*",
+                    audio=FSInputFile(data["filepath"]),
+                    title=data["title"],
+                    performer=data["artist"],
+                    caption=f"🎵 **{data['artist']} — {data['title']}**\n*(найдено через YouTube)*",
                     parse_mode="Markdown"
                 )
 
