@@ -20,12 +20,15 @@ class YouTubeExtractor:
             'noplaylist': True,
             'nocheckcertificate': True,
             
+            # Активация захвата превью
+            'writethumbnail': True,
+            
             # Сетевой прокси-канал
             'proxy': 'socks5://127.0.0.1:10808',
             'socket_timeout': 30,
             'retries': 10,
             
-            # Заголовки имитации
+            # Заголовки эмуляции
             'http_headers': {
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36',
                 'Accept': '*/*',
@@ -35,7 +38,7 @@ class YouTubeExtractor:
             # Удаленная расшифровка JS-челленджей
             'remote_components': ['ejs:github'],
             
-            # Стабильный стек клиентов без вызова варнингов о PO-Token/Cookies
+            # Стек клиентов
             'extractor_args': {
                 'youtube': {
                     'player_client': ['web_creator', 'android_vr', 'web_embedded'],
@@ -43,13 +46,27 @@ class YouTubeExtractor:
                 }
             },
             
-            'postprocessors': [{
-                'key': 'FFmpegExtractAudio',
-                'preferredcodec': 'mp3',
-                'preferredquality': '192',
-            }],
+            # Полноценная цепочка постпроцессинга (Аудио -> Конвертация превью -> Вшивание)
+            'postprocessors': [
+                {
+                    'key': 'FFmpegExtractAudio',
+                    'preferredcodec': 'mp3',
+                    'preferredquality': '320',  # Битрейт 320 kbps
+                },
+                {
+                    'key': 'FFmpegThumbnailsConvertor',
+                    'format': 'jpg',  # Конвертация .webp от YouTube в совместимый с ID3 .jpg
+                },
+                {
+                    'key': 'EmbedThumbnail',  # Запись обложки напрямую в MP3 APIC-фрейм
+                },
+                {
+                    'key': 'FFmpegMetadata',
+                    'add_metadata': True,  # Вшивание названия и исполнителя
+                }
+            ],
             'quiet': True,
-            'no_warnings': True,  # Подавление некритичных системных предупреждений
+            'no_warnings': True,
         }
 
         if ffmpeg_path:
